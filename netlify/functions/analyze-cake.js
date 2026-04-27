@@ -31,8 +31,8 @@ export default async (req, context) => {
     );
   }
 
-  // gemini-2.5-flash — modelo actual disponible para nuevos usuarios
-  const model = 'gemini-2.5-flash-preview-05-20';
+  // gemini-2.5-flash — confirmado disponible en tu cuenta (v1beta)
+  const model = 'gemini-2.5-flash';
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
   try {
