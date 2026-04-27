@@ -31,7 +31,7 @@ export default async (req, context) => {
     );
   }
 
-  const model = 'gemini-2.0-flash';
+  const model = 'gemini-3-flash';
   const url = `https://generativelanguage.googleapis.com/v1/models/${model}:generateContent?key=${apiKey}`;
 
   try {
