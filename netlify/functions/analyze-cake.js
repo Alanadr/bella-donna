@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────
-//  Netlify Function: analyze-cake (versión Google Gemini v1)
+//  Netlify Function: analyze-cake (Google Gemini — con billing)
 //  Ruta pública: /api/analyze-cake
 // ─────────────────────────────────────────────────────────────
 
@@ -26,13 +26,14 @@ export default async (req, context) => {
 
   if (!apiKey) {
     return new Response(
-      'API key no configurada en Netlify → Environment variables → GEMINI_API_KEY',
+      'API key no configurada. Ve a Netlify → Site configuration → Environment variables → GEMINI_API_KEY',
       { status: 500 }
     );
   }
 
-  const model = 'gemini-3-flash';
-  const url = `https://generativelanguage.googleapis.com/v1/models/${model}:generateContent?key=${apiKey}`;
+  // gemini-2.0-flash en v1beta — funciona con billing activo
+  const model = 'gemini-2.0-flash';
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
   try {
     const geminiResponse = await fetch(url, {
@@ -41,13 +42,12 @@ export default async (req, context) => {
       body: JSON.stringify({
         contents: [
           {
-            // En API v1 el system prompt va como primer mensaje del modelo
             role: 'user',
             parts: [{ text: systemPrompt }]
           },
           {
             role: 'model',
-            parts: [{ text: 'Entendido. Analizaré la imagen del pastel y responderé únicamente con el JSON solicitado.' }]
+            parts: [{ text: 'Entendido. Analizaré la imagen y responderé solo con el JSON.' }]
           },
           {
             role: 'user',
@@ -86,7 +86,6 @@ export default async (req, context) => {
       return new Response('Gemini no devolvió texto. Intenta con otra imagen.', { status: 500 });
     }
 
-    // Formato compatible con lo que espera el cotizador
     const formatted = {
       content: [{ type: 'text', text: rawText }]
     };
