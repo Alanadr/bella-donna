@@ -41,9 +41,9 @@ export default async (req, context) => {
     );
   }
 
-  // Modelo de Gemini con visión (analiza imágenes)
- const model = 'gemini-1.5-flash-latest';
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+  // Modelo y URL correctos para la API v1 de Gemini
+  const model = 'gemini-1.5-flash-002';
+  const url = `https://generativelanguage.googleapis.com/v1/models/${model}:generateContent?key=${apiKey}`;
 
   // Llamamos a la API de Gemini desde el servidor
   try {
@@ -53,7 +53,6 @@ export default async (req, context) => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        // El "system prompt" en Gemini va en system_instruction
         system_instruction: {
           parts: [{ text: systemPrompt }]
         },
@@ -62,21 +61,19 @@ export default async (req, context) => {
             role: 'user',
             parts: [
               {
-                // La imagen en base64
                 inline_data: {
                   mime_type: imageMime,
                   data: imageBase64
                 }
               },
               {
-                // El mensaje de texto
                 text: userPrompt
               }
             ]
           }
         ],
         generationConfig: {
-          temperature: 0.2,       // Respuestas más precisas y consistentes
+          temperature: 0.2,
           maxOutputTokens: 1000
         }
       })
@@ -104,7 +101,6 @@ export default async (req, context) => {
     }
 
     // Convertimos al formato que espera el cotizador
-    // (igual que la respuesta de Anthropic, con content[].text)
     const formatted = {
       content: [{ type: 'text', text: rawText }]
     };
