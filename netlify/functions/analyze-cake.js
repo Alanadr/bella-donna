@@ -80,14 +80,24 @@ export default async (req, context) => {
     }
 
     const geminiData = await geminiResponse.json();
-    const rawText = geminiData?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+
+    // gemini-2.5-flash tiene "thinking" — junta todos los parts de texto
+    const parts = geminiData?.candidates?.[0]?.content?.parts || [];
+    const rawText = parts
+      .filter(p => p.text) // solo parts con texto (ignora parts de "thought")
+      .map(p => p.text)
+      .join('');
 
     if (!rawText) {
       return new Response('Gemini no devolvió texto. Intenta con otra imagen.', { status: 500 });
     }
 
+    // Extraemos solo el JSON de la respuesta (por si viene con texto extra)
+    const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+    const cleanJson = jsonMatch ? jsonMatch[0] : rawText;
+
     const formatted = {
-      content: [{ type: 'text', text: rawText }]
+      content: [{ type: 'text', text: cleanJson }]
     };
 
     return new Response(JSON.stringify(formatted), {
