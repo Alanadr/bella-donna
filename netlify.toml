@@ -1,0 +1,15 @@
+# ─────────────────────────────────────────────────
+#  netlify.toml — Configuración de tu sitio en Netlify
+# ─────────────────────────────────────────────────
+
+[build]
+  # Le dice a Netlify que publique la carpeta raíz del proyecto
+  # (donde está tu index.html)
+  publish = "."
+
+[functions]
+  # Le dice a Netlify dónde encontrar las funciones serverless
+  directory = "netlify/functions"
+
+  # esbuild es el empaquetador más rápido y compatible con ES Modules
+  node_bundler = "esbuild"
